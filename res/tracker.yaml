@@ -1,0 +1,15 @@
+%YAML:1.0
+---
+Options:
+   useDnn: 0
+Params:
+   minArea: 100.
+   maxArea: 4000.
+   minAspectRatio: 2.0000000000000001e-01
+   maxAspectRatio: 4.
+   maxWidth: 30.
+   minWidth: 30.
+   maxHeight: 30.
+   minHeight: 30.
+   minDiagonal: 60.
+   maxDiagonal: 60.
