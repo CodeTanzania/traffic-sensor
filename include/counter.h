@@ -24,7 +24,6 @@ namespace com {
             }
 
             template <typename T> Counter<T>::~Counter() {
-                std::cout << "Removing object. Alive = " << objectsAlive << std::endl;
                 if (objectsAlive > 0)
                     --objectsAlive;
             }
