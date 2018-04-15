@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <ctime>
+#include <opencv2/dnn/dnn.hpp>
 
 #include "patterns/subject.h"
 #include "count-topic.h"
@@ -123,7 +124,7 @@ namespace com
                  * @param configFile the configuration file containing parameters used to configure the tracker
                  * in order to reduce false positives.
                  */
-                explicit BlobTracker(const Line &crossingLine, const std::string &configFile);
+                explicit BlobTracker(const Line &, const Line &crossingLine, const Line &, const std::string &configFile);
 
                 /**
                  * @brief construct #BlobTracker to track #{Blob}s crossing through #crossingLine.
@@ -142,7 +143,7 @@ namespace com
                  * @param useDnn when set to true, the tracker will use GoogLeNet Model in order to recognize the objects of
                  * interest.
                  */
-                explicit BlobTracker(const Line &crossingLine, const std::string &configFile, const FilterParams &params, const bool useDnn = false);
+                explicit BlobTracker(const Line &, const Line &crossingLine, const Line &, const std::string &configFile, const FilterParams &params, const bool useDnn = false);
 
                 // public member functions
                 /**
@@ -155,24 +156,32 @@ namespace com
 
             private:
                 // member variables
-                unsigned long mBlobsDirDownCount;       // number of blobs went down across the line
-                unsigned long mBlobsDirUpCount;         // number of blobs went up across the line
+                unsigned long mMiddleLineDownCount;     // number of blobs went down across the line (middle)
+                unsigned long mMiddleLineUpCount;       // number of blobs went up across the line (middle)
+                unsigned long mUpperLineDownCount;      // number of blobs went up across the upper line
+                unsigned long mUpperLineUpCount;        // number of blobs went down accross the upper line
+                unsigned long mLowerLineDownCount;      // number of blobs went down across the lower line
+                unsigned long mLowerLineUpCount;        // number of blobs went up across the lower line
                 unsigned long guid;                     // id of the user.
-                Line mCrossingLine;                     // points forming the crossing line
+                Line mMiddleCrossingLine;               // points forming the crossing line
+                Line mUpperCrossingLine;                // points forming the upper crossing line
+                Line mLowerCrossingLine;                // points forming the lower crossing line.
                 Blobs mBlobs;                           // a list of detected blobs
                 bool mFirstRun;                         // control internals by initializing some resources e.g. FPS
                 unsigned long mFramesCount;             // number of frames
                 bool mUseDnn;                           // if we should use GoogLeNet model to perform object recognition
                 cv::FileNode mConfigFile;               // configuration file
-                std::time_t mStartTime;                      // start time. Used to compute fps
-                std::time_t mCurrTime;                       // current time. Use to compute fps
+                std::time_t mStartTime;                 // start time. Used to compute fps
+                std::time_t mCurrTime;                  // current time. Use to compute fps
                 double mFPS;                            // number of frames per second
+                std::vector<std::string> mLabels;       // labels used by GoogLeNet model
+                cv::dnn::Net mNet;                      // neural network used to perform object recognition.
 
                 // private member functions
-                Blobs filter(const Blobs &blobs);                                   // filter blobs that passes the criteria set by params
+                Blobs filter(const cv::Mat &frame, const Blobs &blobs);                                   // filter blobs that passes the criteria set by params
                 Rects filter(const Rects &rects);                                   // filter blobs by using rects
                 bool paramsFilter(const Blob &) const;                              // use params to filter blobs
-                bool dnnFilter(const Blob &) const;                                 // perform object recognition by using googLeNet model
+                bool dnnFilter(const Blob &, const cv::Mat &);                      // perform object recognition by using googLeNet model
                 void advancePreviousDetections(Blobs &blobs);                       // perform comparison between old and newer detections in order to update or add new detections
                 void update(int index, Blob &newBlob);                              // update old detection at the index using newBlob info
                 void append(Blob &blob);                                            // add new detection to a list of current blobs
@@ -193,12 +202,34 @@ namespace com
                 void drawFPS(cv::Mat &frame);
 
                 // draw crossing line
-                void drawCrossingLine(cv::Mat &frame);
+                void drawCrossingLines(cv::Mat &frame);
 
                 // draw statististics
                 void drawStatistics(cv::Mat &frame);
 
+                // count number of blobs crossing a line in a given direction
                 void countCrossingBlobs();
+
+                /**
+                 * @brief load and initializes the class labels from the file.
+                 *
+                 * @param filename - the filename we're going to load the classes from.
+                 * @return true if class labels are loaded successfully.
+                 */
+                bool loadClassLabels(const std::string &filename);
+
+                /**
+                 * @brief stablelize detection by running through deep learning model
+                 *
+                 * @param labelsFile - path to the labels
+                 * @param protoTextFile - path to the proto text file
+                 * @param modelBinFilel - path to the model binary file.
+                 * @return true if initialization goes successful.
+                 */
+                bool initRecognition(const std::string &labelsFile, const std::string &protoTextFile, const std::string &modelBinFile);
+
+                // class with maximum probability
+                void getMaxClass(const cv::Mat &probBlob, int &classId, double &classProb);
 
                 // get FPS
                 inline double fps()
@@ -256,7 +287,12 @@ namespace com
                     // should we use dnn for object recognition?
                     if (mUseDnn)
                     {
-                        // TODO: initialize the dnn module
+                        // initialize the model
+                        std::string protoTextFile = node["modelTxt"];
+                        std::string modelBin      = node["modelBin"];
+                        std::string labelsFile    = node["labelsFile"];
+
+                        initRecognition(labelsFile, protoTextFile, modelBin);
                     }
 
                     // release file storage

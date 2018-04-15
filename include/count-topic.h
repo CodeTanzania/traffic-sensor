@@ -14,38 +14,82 @@ namespace com
             public:
                 enum CountDirection
                 {
-                    COUNT_MOVING_AWAY,
-                    COUNT_MOVING_TOWARDS
+                    MIDDLE_COUNT_MOVING_AWAY,
+                    MIDDLE_COUNT_MOVING_TOWARDS,
+                    UPPER_COUNT_MOVING_AWAY,
+                    UPPER_COUNT_MOVING_TOWARDS,
+                    DOWN_COUNT_MOVING_AWAY,
+                    DOWN_COUNT_MOVING_TOWARDS
                 };
 
-                explicit CountTopic(): _total_moving_away{0}, _total_moving_towards{0} {}
+                explicit CountTopic(): _middle_total_moving_away{0}, _middle_total_moving_towards{0} {}
 
                 void setCount(const CountDirection &direction, const unsigned long count)
                 {
-                    if (direction == COUNT_MOVING_AWAY)
+                    if (direction == MIDDLE_COUNT_MOVING_AWAY)
                     {
-                        _total_moving_away = count;
+                        _middle_total_moving_away = count;
                     }
-                    else
+                    else if (direction == MIDDLE_COUNT_MOVING_TOWARDS)
                     {
-                        _total_moving_towards = count;
+                        _middle_total_moving_towards = count;
+                    }
+                    else if (direction == UPPER_COUNT_MOVING_AWAY)
+                    {
+                        _upper_total_moving_away = count;
+                    }
+                    else if (direction == UPPER_COUNT_MOVING_TOWARDS)
+                    {
+                        _upper_total_moving_towards = count;
+                    }
+                    else if (direction == DOWN_COUNT_MOVING_AWAY)
+                    {
+                        _down_total_moving_away = count;
+                    }
+                    else if (direction == DOWN_COUNT_MOVING_TOWARDS)
+                    {
+                        _down_total_moving_towards = count;
                     }
                 }
 
                 unsigned long getCount(const CountDirection &direction) const
                 {
-                    if (direction == COUNT_MOVING_AWAY)
+                    if (direction == MIDDLE_COUNT_MOVING_AWAY)
                     {
-                        return _total_moving_away;
+                        return _middle_total_moving_away;
+                    }
+                    else if (direction == MIDDLE_COUNT_MOVING_TOWARDS)
+                    {
+                        return _middle_total_moving_towards;
+                    }
+                    else if (direction == UPPER_COUNT_MOVING_AWAY)
+                    {
+                        return _upper_total_moving_away;
+                    }
+                    else if (direction == UPPER_COUNT_MOVING_TOWARDS)
+                    {
+                        return _upper_total_moving_towards;
+                    }
+                    else if (direction == DOWN_COUNT_MOVING_AWAY)
+                    {
+                        return _down_total_moving_away;
+                    }
+                    else if (direction == DOWN_COUNT_MOVING_TOWARDS)
+                    {
+                        return _down_total_moving_towards;
                     }
                     else
                     {
-                        return _total_moving_towards;
+                        return 0;
                     }
                 }
             private:
-                unsigned long _total_moving_away;
-                unsigned long _total_moving_towards;
+                unsigned long _middle_total_moving_away;
+                unsigned long _middle_total_moving_towards;
+                unsigned long _upper_total_moving_away;
+                unsigned long _upper_total_moving_towards;
+                unsigned long _down_total_moving_away;
+                unsigned long _down_total_moving_towards;
             };
         }
     }

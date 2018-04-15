@@ -34,7 +34,9 @@ int main(void)
     Mat frame0;
     Mat frame1;
 
-    array<cv::Point, 2> crossingLine;
+    array<cv::Point, 2> upper;
+    array<cv::Point, 2> middle;
+    array<cv::Point, 2> lower;
 
     capVideo.open("../res/CarsDrivingUnderBridge.mp4");
 
@@ -53,20 +55,33 @@ int main(void)
     capVideo.read(frame0);
     capVideo.read(frame1);
 
-    int pos = (int)round((double)frame0.rows * 0.50);
+    double rows = static_cast<double>(frame0.rows);
 
-    crossingLine[0].x = 0;
-    crossingLine[0].y = pos;
+    int pos1 = static_cast<int>(round(rows * 0.30));
+    int pos2 = static_cast<int>(round(rows * 0.40));
+    int pos3 = static_cast<int>(round(rows * 0.50));
 
-    crossingLine[1].x = frame0.cols - 1;
-    crossingLine[1].y = pos;
+    upper[0].x = 0;
+    upper[0].y = pos1;
+    upper[1].x = frame0.cols;
+    upper[1].y = pos1;
+
+    middle[0].x = 0;
+    middle[0].y = pos2;
+    middle[1].x = frame0.cols;
+    middle[1].y = pos2;
+
+    lower[0].x = 0;
+    lower[0].y = pos3;
+    lower[1].x = frame0.cols;
+    lower[1].y = pos3;
 
     char escapeKeyCode = 0;
 
     // BlobTracker::FilterParams params;
 
     string configFile = "../res/tracker.yaml";
-    BlobTracker bt(crossingLine, configFile);
+    BlobTracker bt(upper, middle, lower, configFile);
 
     LoggingObserver observer;
     bt.attach(&observer);

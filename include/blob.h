@@ -54,6 +54,10 @@ namespace com {
                     return mPredictedNxtPos;
                 }
 
+                void setNextPosition(const cv::Point &pos) {
+                    mPredictedNxtPos = pos;
+                }
+
                 void setId(const unsigned long long id) {
                     mId = id;
                 }

@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message DbConfig
-{
-	string database = 1;
-}

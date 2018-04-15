@@ -29,6 +29,7 @@ find_package(OpenCV  REQUIRED)
 file(GLOB SOURCES "src/*.cpp")
 
 add_subdirectory(patterns)
+add_subdirectory(preprocessing)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)

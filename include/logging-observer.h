@@ -26,9 +26,9 @@ namespace com
                     std::cout << "[LOG "
                               << timestr
                               << "] Moving Away: "
-                              << topic.getCount(CountTopic::CountDirection::COUNT_MOVING_AWAY)
+                              << topic.getCount(CountTopic::CountDirection::MIDDLE_COUNT_MOVING_AWAY)
                               << " Moving Toward: "
-                              << topic.getCount(CountTopic::CountDirection::COUNT_MOVING_TOWARDS)
+                              << topic.getCount(CountTopic::CountDirection::MIDDLE_COUNT_MOVING_TOWARDS)
                               << std::endl;
                 }
             };
