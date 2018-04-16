@@ -4,8 +4,6 @@
 /**
  * Compute the moving average by multipling weights to the values and divide
  * by the triangular sum of the weights.
- * see https://www.geeksforgeeks.org/sum-series-1-3-6-10-triangular-numbers/ on how
- * to formulate triangular sum.
  */
 class WMAvg {
 public:
@@ -27,7 +25,7 @@ public:
 
         while(first != last) {
             sum += n * (n + 1) / 2;
-            avg += (*first++) * (++n);
+            avg += (*first++) * (n++);
         } // end while
 
         avg /= ((sum == 0.0) ? 1.0 : sum);
