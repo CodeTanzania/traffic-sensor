@@ -32,10 +32,10 @@ namespace com {
                 for (unsigned i = 0; i < N; i++) {
                     avgXDelta += (xDeltas[i] * (i));
                     avgYDelta += (yDeltas[i] * (i));
-                    sum += i * (i + 1) / 2;
+                    sum += i * (i + 1) / 2; // sum of triangular numbers
                 }
 
-                sum = (sum == 0.0f) ? 1.0f : sum;
+                sum = (sum == 0.0f) ? 1.0f : sum; // avoid divide by 0 errors
 
                 avgXDelta /= sum;
                 avgYDelta /= sum;
