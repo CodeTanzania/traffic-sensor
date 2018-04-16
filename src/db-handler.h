@@ -22,7 +22,7 @@ namespace com
 
             DbHandler::DbHandler(const std::string &config_file)
             {
-                std::ifstream f(file, std::ifstream::binary);
+                std::ifstream f(config_file, std::ifstream::binary);
 
             }
         }
